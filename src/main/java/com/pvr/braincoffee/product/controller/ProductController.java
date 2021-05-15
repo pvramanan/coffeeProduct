@@ -23,8 +23,8 @@ import com.pvr.braincoffee.product.repository.ProductRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-@RestController
-@RequestMapping("/products")
+//@RestController
+//@RequestMapping("/products")
 public class ProductController {
 
 	private ProductRepository productRepository;
