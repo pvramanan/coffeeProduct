@@ -19,23 +19,34 @@ import org.springframework.web.bind.annotation.RestController;
 import com.pvr.braincoffee.product.model.Product;
 import com.pvr.braincoffee.product.model.ProductEvent;
 import com.pvr.braincoffee.product.repository.ProductRepository;
+import com.pvr.braincoffee.product.service.HikariAsyncService;
+import com.pvr.braincoffee.product.service.WebclientService;
 
+import io.swagger.annotations.ApiModel;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/products")
+@ApiModel("Product controller")
 public class ProductController {
 
 	private ProductRepository productRepository;
+	private WebclientService webclientService;
+	private HikariAsyncService hikariAsyncService;
 
 	@Autowired
-	public ProductController(ProductRepository productRepository) {
+	public ProductController(ProductRepository productRepository, WebclientService webclientService,
+			HikariAsyncService hikariAsyncService) {
 		this.productRepository = productRepository;
+		this.webclientService = webclientService;
+		this.hikariAsyncService = hikariAsyncService;
 	}
 
 	@GetMapping
 	public Flux<Product> getAllProducts() {
+		hikariAsyncService.processData();
+		//webclientService.getHikariDemoCountry();
 		return productRepository.findAll();
 	}
 
@@ -77,7 +88,7 @@ public class ProductController {
 
 	@GetMapping(value = "/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public Flux<ProductEvent> getProductEvent() {
-		return Flux.interval(Duration.ofSeconds(5)).map(val -> new ProductEvent(val, "Product Event"));
+		return Flux.interval(Duration.ofSeconds(1)).map(val -> new ProductEvent(val, "Product Event"));
 	}
 
 }
